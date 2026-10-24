@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-heading: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-telugu: 'Noto Sans Telugu', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #F5F0E6;
+    color: #101B2D;
+    letter-spacing: -0.01em;
+  }
+
+  /* High Contrast Mode */
+  body.high-contrast {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+  }
+
+  body.high-contrast .bg-\[\#F5F0E6\] {
+    background-color: #000000 !important;
+  }
+
+  body.high-contrast .bg-white {
+    background-color: #121212 !important;
+    color: #FFFFFF !important;
+    border-color: #F59E0B !important;
+  }
+
+  body.high-contrast .text-\[\#101B2D\] {
+    color: #FFFFFF !important;
+  }
+
+  body.high-contrast .border-\[\#E2DAC7\] {
+    border-color: #F59E0B !important;
+  }
+
+  body.high-contrast button {
+    border-color: #F59E0B !important;
+  }
+
+  /* Font sizing scaling */
+  body.font-size-large {
+    font-size: 112.5%;
+  }
+
+  body.font-size-xl {
+    font-size: 125%;
+  }
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-telugu {
+  font-family: var(--font-telugu);
+}
+
+.font-mono-code {
+  font-family: var(--font-mono);
+}
