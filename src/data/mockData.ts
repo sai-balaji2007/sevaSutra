@@ -449,3 +449,94 @@ Beneficiary`
     }
   }
 };
+
+export const INITIAL_NOTIFICATIONS = [
+  {
+    id: 'NOTIF-1',
+    title: 'Payment Return Notice: Code AB-01',
+    message: 'October 2026 pension of ₹3,250 returned unpaid. Reason: Aadhaar not mapped in NPCI APBS.',
+    timestamp: '2026-10-02 09:30 IST',
+    type: 'PAYMENT_ALERT' as const,
+    severity: 'HIGH_RISK' as const,
+    read: false,
+    source: 'PFMS Treasury Bridge'
+  },
+  {
+    id: 'NOTIF-2',
+    title: 'Bi-Monthly Verification Due in 12 Days',
+    message: 'Ward Sachivalayam welfare verification window scheduled for 05-Nov-2026. Keep Aadhaar handy.',
+    timestamp: '2026-10-23 11:00 IST',
+    type: 'VERIFICATION_DUE' as const,
+    severity: 'ATTENTION' as const,
+    read: false,
+    source: 'Grama / Ward Sachivalayam'
+  },
+  {
+    id: 'NOTIF-3',
+    title: 'Caregiver Check Logged',
+    message: 'Authorized caregiver M. Suresh Kumar checked recent DBT payment history.',
+    timestamp: '2026-10-23 18:42 IST',
+    type: 'CAREGIVER_ACTION' as const,
+    severity: 'NORMAL' as const,
+    read: true,
+    source: 'Caregiver Suraksha Vault'
+  },
+  {
+    id: 'NOTIF-4',
+    title: 'Life Certificate Approaching Expiry Window',
+    message: 'Jeevan Pramaan Digital Life Certificate is valid until 30-Nov-2026. Renewal window open.',
+    timestamp: '2026-10-15 14:20 IST',
+    type: 'SYSTEM' as const,
+    severity: 'ATTENTION' as const,
+    read: true,
+    source: 'Jeevan Pramaan Portal'
+  }
+];
+
+export const BENEFIT_CATALOG = [
+  {
+    id: 'SCHEME-IGNOAPS',
+    name: 'Indira Gandhi National Old Age Pension (IGNOAPS)',
+    authority: 'Ministry of Rural Development (NSAP) & State Social Welfare',
+    category: 'Elderly' as const,
+    monthlyBenefit: '₹3,000 – ₹3,250 / month',
+    eligibility: ['Age 60 years or above', 'BPL family category / destitute criteria', 'Single bank account holder'],
+    keyDocuments: ['Aadhaar Card', 'Income / BPL Certificate', 'Bank Passbook with active DBT', 'Age Proof'],
+    dbtEnabled: true,
+    coverage: 'All States / Pan-India'
+  },
+  {
+    id: 'SCHEME-IGNDPS',
+    name: 'Indira Gandhi National Disability Pension (IGNDPS)',
+    authority: 'Department of Empowerment of Persons with Disabilities',
+    category: 'Disability' as const,
+    monthlyBenefit: '₹3,000 – ₹4,016 / month',
+    eligibility: ['Age 18–79 years', 'Severe or profound disability (40% or above)', 'BPL household'],
+    keyDocuments: ['UDID Card / Disability Certificate', 'Aadhaar Card', 'Bank Passbook', 'Residence Proof'],
+    dbtEnabled: true,
+    coverage: 'Central + State top-up'
+  },
+  {
+    id: 'SCHEME-IGNWPS',
+    name: 'Indira Gandhi National Widow Pension Scheme (IGNWPS)',
+    authority: 'Ministry of Rural Development',
+    category: 'Widow' as const,
+    monthlyBenefit: '₹3,000 / month',
+    eligibility: ['Widows aged 40–79 years', 'Belonging to a household below poverty line'],
+    keyDocuments: ['Death Certificate of Spouse', 'Aadhaar Card', 'Bank Passbook', 'BPL Card'],
+    dbtEnabled: true,
+    coverage: 'All States'
+  },
+  {
+    id: 'SCHEME-APY',
+    name: 'Atal Pension Yojana (APY)',
+    authority: 'Pension Fund Regulatory and Development Authority (PFRDA)',
+    category: 'Social Security' as const,
+    monthlyBenefit: '₹1,000 – ₹5,000 / month guaranteed pension',
+    eligibility: ['Indian citizen aged 18–40 years', 'Savings bank account with auto-debit'],
+    keyDocuments: ['Aadhaar Card', 'Bank Account', 'Mobile Number'],
+    dbtEnabled: true,
+    coverage: 'National Unorganized Sector'
+  }
+];
+

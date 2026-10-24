@@ -1,5 +1,5 @@
 import React from 'react';
-import { Beneficiary, Language } from '../types';
+import { Beneficiary, Language, NavPage } from '../types';
 import { TRANSLATIONS } from '../data/translations';
 import { 
   Volume2, 
@@ -7,10 +7,9 @@ import {
   Eye, 
   PhoneCall, 
   ShieldCheck, 
-  ChevronDown, 
-  User, 
-  Sparkles,
-  AlertCircle
+  Menu,
+  Bell,
+  User
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -26,6 +25,10 @@ interface HeaderProps {
   audioVoiceEnabled: boolean;
   onToggleAudioVoice: () => void;
   onSpeak: (text: string) => void;
+  onOpenMobileMenu: () => void;
+  activePage: NavPage;
+  onNavigate: (page: NavPage) => void;
+  unreadCount: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -41,71 +44,84 @@ export const Header: React.FC<HeaderProps> = ({
   audioVoiceEnabled,
   onToggleAudioVoice,
   onSpeak,
+  onOpenMobileMenu,
+  activePage,
+  onNavigate,
+  unreadCount,
 }) => {
   const t = TRANSLATIONS[language];
 
   return (
-    <header className="border-b border-[#E2DAC7] bg-[#FDFBF7] shadow-xs">
-      {/* Emergency & National Helpline Bar */}
-      <div className="bg-[#087F68] text-white text-xs md:text-sm px-4 py-1.5 flex flex-wrap items-center justify-between font-medium">
+    <header className="sticky top-0 z-30 bg-white border-b border-[#D0D5DD] shadow-2xs">
+      {/* Top Civic Security Strip */}
+      <div className="bg-[#111C2E] text-white text-[11px] px-4 py-1.5 flex flex-wrap items-center justify-between font-medium">
         <div className="flex items-center gap-2">
-          <PhoneCall className="w-3.5 h-3.5 animate-pulse text-[#E8F5E9]" />
-          <span>{t.hotline}</span>
+          <PhoneCall className="w-3.5 h-3.5 text-[#A6F4C5] animate-pulse" />
+          <span className="text-[#D0D5DD]">{t.hotline}</span>
         </div>
-        <div className="flex items-center gap-4 text-xs">
-          <span className="hidden md:inline bg-[#055C4B] px-2 py-0.5 rounded-sm">IMPACTX 2026 • Challenge 20 Civic-Fintech</span>
-          <span className="text-[#A7F3D0]">DBT Bharat Aligned</span>
+        <div className="hidden sm:flex items-center gap-3 text-[10px] text-[#98A2B3]">
+          <span className="bg-[#1A2840] px-2 py-0.5 rounded-xs text-[#C5A267] font-mono-code font-bold">
+            IMPACTX 2026 • Challenge 20
+          </span>
+          <span className="text-[#A6F4C5] flex items-center gap-1 font-semibold">
+            <ShieldCheck className="w-3 h-3" /> DBT Bharat Aligned
+          </span>
         </div>
       </div>
 
-      {/* Main Header Row */}
-      <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        {/* Brand Logo & Motto */}
+      {/* Main Bar */}
+      <div className="px-4 py-3 flex items-center justify-between gap-3">
+        {/* Left: Mobile Menu Toggle & Title */}
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-[#087F68] text-white flex items-center justify-center shadow-md font-bold text-2xl font-heading ring-2 ring-[#087F68]/20">
-            సే
-          </div>
+          <button
+            onClick={onOpenMobileMenu}
+            className="md:hidden text-[#111C2E] hover:bg-[#F4F6F8] p-2 rounded-lg border border-[#D0D5DD] cursor-pointer"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight text-[#101B2D] font-heading">
-                {t.appTitle}
-              </h1>
-              <span className="bg-[#E8F5E9] text-[#087F68] text-xs font-semibold px-2 py-0.5 rounded-full border border-[#087F68]/30 flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" /> Suraksha Verified
+              <span className="font-heading font-extrabold text-lg text-[#111C2E] tracking-tight">
+                SEVA SUTRA
+              </span>
+              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-[#087F68] bg-[#E7F4EF] px-2 py-0.5 rounded-sm">
+                <ShieldCheck className="w-3.5 h-3.5" /> Civic-Fintech
               </span>
             </div>
-            <p className="text-xs md:text-sm text-[#4A5568]">
+            <p className="text-[11px] text-[#475467] hidden md:block">
               {t.appSubtitle}
             </p>
           </div>
         </div>
 
-        {/* Accessibility Toolbar & Language Select */}
-        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+        {/* Right: Accessibility Controls & Active Persona */}
+        <div className="flex items-center gap-2">
           {/* Language Selector */}
-          <div className="flex items-center bg-[#EFE9DC] p-1 rounded-lg border border-[#D5CBB8]">
+          <div className="flex items-center bg-[#F2F4F7] p-0.5 rounded-lg border border-[#D0D5DD]">
             <button
               onClick={() => {
                 onSelectLanguage('en');
-                onSpeak('Language switched to English');
+                onSpeak('Language set to English');
               }}
-              className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all ${
+              className={`px-2 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
                 language === 'en' 
-                  ? 'bg-white text-[#101B2D] shadow-xs' 
-                  : 'text-[#4A5568] hover:text-[#101B2D]'
+                  ? 'bg-white text-[#111C2E] shadow-2xs font-bold' 
+                  : 'text-[#475467] hover:text-[#111C2E]'
               }`}
             >
-              English
+              EN
             </button>
             <button
               onClick={() => {
                 onSelectLanguage('te');
                 onSpeak('భాష తెలుగుగా మార్చబడింది');
               }}
-              className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all ${
+              className={`px-2 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
                 language === 'te' 
-                  ? 'bg-[#087F68] text-white shadow-xs' 
-                  : 'text-[#4A5568] hover:text-[#101B2D]'
+                  ? 'bg-[#087F68] text-white shadow-2xs font-bold' 
+                  : 'text-[#475467] hover:text-[#111C2E]'
               }`}
             >
               తెలుగు
@@ -115,10 +131,10 @@ export const Header: React.FC<HeaderProps> = ({
                 onSelectLanguage('hi');
                 onSpeak('भाषा हिंदी में बदली गई');
               }}
-              className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all ${
+              className={`px-2 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
                 language === 'hi' 
-                  ? 'bg-[#087F68] text-white shadow-xs' 
-                  : 'text-[#4A5568] hover:text-[#101B2D]'
+                  ? 'bg-[#087F68] text-white shadow-2xs font-bold' 
+                  : 'text-[#475467] hover:text-[#111C2E]'
               }`}
             >
               हिन्दी
@@ -126,25 +142,24 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Font Size Adjusters */}
-          <div className="flex items-center bg-[#EFE9DC] p-1 rounded-lg border border-[#D5CBB8] text-xs font-bold text-[#101B2D]">
-            <span className="px-1.5 text-[#5A6A80] text-[10px] uppercase">Size:</span>
+          <div className="hidden sm:flex items-center bg-[#F2F4F7] p-0.5 rounded-lg border border-[#D0D5DD] text-xs font-bold text-[#111C2E]">
             <button
               onClick={() => onChangeFontSize('normal')}
-              className={`px-2 py-1 rounded-sm ${fontSize === 'normal' ? 'bg-white shadow-xs' : 'text-[#4A5568]'}`}
+              className={`px-2 py-1 rounded-sm cursor-pointer ${fontSize === 'normal' ? 'bg-white shadow-2xs' : 'text-[#475467]'}`}
               title="Normal Font Size"
             >
               A
             </button>
             <button
               onClick={() => onChangeFontSize('large')}
-              className={`px-2 py-1 rounded-sm text-sm ${fontSize === 'large' ? 'bg-white shadow-xs' : 'text-[#4A5568]'}`}
+              className={`px-2 py-1 rounded-sm text-sm cursor-pointer ${fontSize === 'large' ? 'bg-white shadow-2xs' : 'text-[#475467]'}`}
               title="Large Font Size"
             >
               A+
             </button>
             <button
               onClick={() => onChangeFontSize('xl')}
-              className={`px-2 py-1 rounded-sm text-base ${fontSize === 'xl' ? 'bg-white shadow-xs' : 'text-[#4A5568]'}`}
+              className={`px-2 py-1 rounded-sm text-base cursor-pointer ${fontSize === 'xl' ? 'bg-white shadow-2xs' : 'text-[#475467]'}`}
               title="Extra Large Font Size"
             >
               A++
@@ -154,75 +169,42 @@ export const Header: React.FC<HeaderProps> = ({
           {/* High Contrast Toggle */}
           <button
             onClick={onToggleHighContrast}
-            className={`p-2 rounded-lg border flex items-center gap-1 text-xs font-semibold transition-all ${
+            className={`p-2 rounded-lg border flex items-center gap-1 text-xs font-semibold transition-all cursor-pointer ${
               highContrast 
                 ? 'bg-black text-amber-300 border-amber-400 ring-2 ring-amber-400' 
-                : 'bg-[#EFE9DC] text-[#101B2D] border-[#D5CBB8] hover:bg-[#E5DDCD]'
+                : 'bg-white text-[#475467] border-[#D0D5DD] hover:bg-[#F4F6F8]'
             }`}
-            title="Toggle High Contrast Mode for Visually Impaired"
+            title="Toggle High Contrast Display Mode"
           >
             <Eye className="w-4 h-4" />
-            <span className="hidden sm:inline">Contrast</span>
           </button>
 
           {/* Audio Voice Narration Toggle */}
           <button
             onClick={onToggleAudioVoice}
-            className={`p-2 rounded-lg border flex items-center gap-1 text-xs font-semibold transition-all ${
+            className={`p-2 rounded-lg border flex items-center gap-1 text-xs font-semibold transition-all cursor-pointer ${
               audioVoiceEnabled 
-                ? 'bg-[#087F68] text-white border-[#087F68] ring-2 ring-[#087F68]/30' 
-                : 'bg-[#EFE9DC] text-[#101B2D] border-[#D5CBB8] hover:bg-[#E5DDCD]'
+                ? 'bg-[#E7F4EF] text-[#087F68] border-[#A6F4C5] ring-1 ring-[#087F68]' 
+                : 'bg-white text-[#475467] border-[#D0D5DD] hover:bg-[#F4F6F8]'
             }`}
-            title="Toggle Spoken Audio Feedback"
+            title="Toggle Spoken Audio Narration"
           >
-            {audioVoiceEnabled ? <Volume2 className="w-4 h-4 text-emerald-200" /> : <VolumeX className="w-4 h-4 text-gray-500" />}
-            <span className="hidden sm:inline">{audioVoiceEnabled ? 'Voice ON' : 'Voice OFF'}</span>
+            {audioVoiceEnabled ? <Volume2 className="w-4 h-4 text-[#087F68]" /> : <VolumeX className="w-4 h-4 text-gray-400" />}
           </button>
-        </div>
-      </div>
 
-      {/* Active Beneficiary Ribbon */}
-      <div className="bg-[#EAE2D2] border-t border-[#DFD5C2] px-4 py-2">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-[#5A6A80] font-medium text-xs uppercase tracking-wide">
-              {t.activeBeneficiary}:
-            </span>
-            <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full border border-[#D5CBB8] shadow-2xs font-semibold text-[#101B2D]">
-              <User className="w-4 h-4 text-[#087F68]" />
-              <span>{currentBeneficiary.name}</span>
-              <span className="text-xs text-[#5A6A80] font-normal">
-                ({currentBeneficiary.age}y, {currentBeneficiary.category})
+          {/* Notifications Shortcut */}
+          <button
+            onClick={() => onNavigate('NOTIFICATIONS')}
+            className="p-2 rounded-lg border border-[#D0D5DD] text-[#475467] hover:bg-[#F4F6F8] relative cursor-pointer"
+            title="View Notifications"
+          >
+            <Bell className="w-4 h-4" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#B42332] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                {unreadCount}
               </span>
-              <span className="text-xs bg-[#E8F5E9] text-[#087F68] px-2 py-0.5 rounded-full font-mono-code font-bold">
-                {currentBeneficiary.pensionId}
-              </span>
-            </div>
-          </div>
-
-          {/* Quick Beneficiary Selector Dropdown */}
-          <div className="flex items-center gap-2">
-            <label className="text-xs text-[#5A6A80] font-medium hidden sm:inline">
-              {t.switchBeneficiary}:
-            </label>
-            <select
-              value={currentBeneficiary.id}
-              onChange={(e) => {
-                const found = beneficiaries.find(b => b.id === e.target.value);
-                if (found) {
-                  onSelectBeneficiary(found);
-                  onSpeak(`Selected beneficiary: ${found.name}`);
-                }
-              }}
-              className="bg-white text-xs md:text-sm font-medium border border-[#D5CBB8] rounded-lg px-2.5 py-1 text-[#101B2D] focus:outline-none focus:ring-2 focus:ring-[#087F68]"
-            >
-              {beneficiaries.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name} — {b.scheme} ({b.district})
-                </option>
-              ))}
-            </select>
-          </div>
+            )}
+          </button>
         </div>
       </div>
     </header>

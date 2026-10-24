@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Beneficiary, CaregiverDelegation, CaregiverAuditLog, Language } from './types';
-import { INITIAL_BENEFICIARIES, INITIAL_CAREGIVERS, INITIAL_AUDIT_LOGS } from './data/mockData';
+import { Beneficiary, CaregiverDelegation, CaregiverAuditLog, Language, NavPage } from './types';
+import { INITIAL_BENEFICIARIES, INITIAL_CAREGIVERS, INITIAL_AUDIT_LOGS, INITIAL_NOTIFICATIONS } from './data/mockData';
 import { TRANSLATIONS } from './data/translations';
+import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
+import { DashboardView } from './components/DashboardView';
 import { StatusTrackerTab } from './components/StatusTrackerTab';
 import { DiagnosticDoctorTab } from './components/DiagnosticDoctorTab';
 import { CaregiverVaultTab } from './components/CaregiverVaultTab';
 import { DocumentRakshakTab } from './components/DocumentRakshakTab';
 import { GrievancePortalTab } from './components/GrievancePortalTab';
 import { VoiceDeskTab } from './components/VoiceDeskTab';
+import { NotificationsView } from './components/NotificationsView';
+import { ExploreBenefitsView } from './components/ExploreBenefitsView';
+import { SettingsView } from './components/SettingsView';
+import { TechnicalView } from './components/TechnicalView';
 import { 
-  Building2, 
-  Stethoscope, 
+  Landmark, 
   ShieldCheck, 
-  FolderCheck, 
-  FileText, 
-  Bot, 
-  ExternalLink,
-  HeartHandshake,
-  Landmark,
-  Scale
+  HeartHandshake, 
+  Scale, 
+  PhoneCall 
 } from 'lucide-react';
 
 export function App() {
@@ -28,9 +29,8 @@ export function App() {
   const [caregivers, setCaregivers] = useState<CaregiverDelegation[]>(INITIAL_CAREGIVERS);
   const [auditLogs, setAuditLogs] = useState<CaregiverAuditLog[]>(INITIAL_AUDIT_LOGS);
 
-  const [activeTab, setActiveTab] = useState<
-    'TRACKER' | 'DIAGNOSTIC' | 'CAREGIVER' | 'LOCKER' | 'GRIEVANCE' | 'VOICE'
-  >('TRACKER');
+  const [activePage, setActivePage] = useState<NavPage>('DASHBOARD');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const [language, setLanguage] = useState<Language>('en');
   const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xl'>('normal');
@@ -79,7 +79,6 @@ export function App() {
     };
     setCaregivers([newCaregiver, ...caregivers]);
 
-    // Add audit log
     const newLog: CaregiverAuditLog = {
       id: `AUD-${Date.now()}`,
       timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
@@ -110,209 +109,187 @@ export function App() {
     }
   };
 
+  const unreadCount = INITIAL_NOTIFICATIONS.filter(n => !n.read).length;
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#F5F0E6] text-[#101B2D]">
-      {/* Top Header */}
-      <Header
+    <div className="min-h-screen flex bg-[#F4F6F8] text-[#172033] font-sans">
+      {/* Deep Midnight Navy Desktop & Mobile Sidebar */}
+      <Sidebar
+        activePage={activePage}
+        onNavigate={(page) => {
+          setActivePage(page);
+          speakText(`Navigated to ${page}`);
+        }}
         beneficiaries={beneficiaries}
         currentBeneficiary={currentBeneficiary}
-        onSelectBeneficiary={(b) => setCurrentBeneficiary(b)}
+        onSelectBeneficiary={(b) => {
+          setCurrentBeneficiary(b);
+          speakText(`Switched beneficiary to ${b.name}`);
+        }}
         language={language}
-        onSelectLanguage={(l) => setLanguage(l)}
-        fontSize={fontSize}
-        onChangeFontSize={(s) => setFontSize(s)}
-        highContrast={highContrast}
-        onToggleHighContrast={() => setHighContrast(!highContrast)}
-        audioVoiceEnabled={audioVoiceEnabled}
-        onToggleAudioVoice={() => setAudioVoiceEnabled(!audioVoiceEnabled)}
-        onSpeak={speakText}
+        mobileOpen={mobileSidebarOpen}
+        onCloseMobile={() => setMobileSidebarOpen(false)}
+        unreadNotificationsCount={unreadCount}
       />
 
-      {/* Main Tab Navigation */}
-      <nav className="bg-[#EFE9DC] border-b border-[#D5CBB8] sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 flex overflow-x-auto scrollbar-none gap-2 py-2">
-          <button
-            onClick={() => {
-              setActiveTab('TRACKER');
-              speakText(t.tabTracker);
-            }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm whitespace-nowrap transition-all cursor-pointer ${
-              activeTab === 'TRACKER'
-                ? 'bg-[#087F68] text-white shadow-md'
-                : 'text-[#4A5568] hover:bg-white/60 hover:text-[#101B2D]'
-            }`}
-          >
-            <Building2 className="w-4 h-4" />
-            <span>{t.tabTracker}</span>
-          </button>
+      {/* Main Content Workspace Column */}
+      <div className="flex-1 flex flex-col min-w-0 md:pl-72 transition-all">
+        {/* Top Header */}
+        <Header
+          beneficiaries={beneficiaries}
+          currentBeneficiary={currentBeneficiary}
+          onSelectBeneficiary={(b) => setCurrentBeneficiary(b)}
+          language={language}
+          onSelectLanguage={(l) => setLanguage(l)}
+          fontSize={fontSize}
+          onChangeFontSize={(s) => setFontSize(s)}
+          highContrast={highContrast}
+          onToggleHighContrast={() => setHighContrast(!highContrast)}
+          audioVoiceEnabled={audioVoiceEnabled}
+          onToggleAudioVoice={() => setAudioVoiceEnabled(!audioVoiceEnabled)}
+          onSpeak={speakText}
+          onOpenMobileMenu={() => setMobileSidebarOpen(true)}
+          activePage={activePage}
+          onNavigate={(p) => setActivePage(p)}
+          unreadCount={unreadCount}
+        />
 
-          <button
-            onClick={() => {
-              setActiveTab('DIAGNOSTIC');
-              speakText(t.tabDiagnostic);
-            }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm whitespace-nowrap transition-all cursor-pointer ${
-              activeTab === 'DIAGNOSTIC'
-                ? 'bg-[#087F68] text-white shadow-md'
-                : 'text-[#4A5568] hover:bg-white/60 hover:text-[#101B2D]'
-            }`}
-          >
-            <Stethoscope className="w-4 h-4 text-emerald-300" />
-            <span>{t.tabDiagnostic}</span>
-          </button>
+        {/* Dynamic Page Content */}
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-6">
+          {activePage === 'DASHBOARD' && (
+            <DashboardView
+              beneficiary={currentBeneficiary}
+              language={language}
+              onNavigate={(page) => setActivePage(page)}
+              onSpeak={speakText}
+            />
+          )}
 
-          <button
-            onClick={() => {
-              setActiveTab('CAREGIVER');
-              speakText(t.tabCaregiver);
-            }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm whitespace-nowrap transition-all cursor-pointer ${
-              activeTab === 'CAREGIVER'
-                ? 'bg-[#087F68] text-white shadow-md'
-                : 'text-[#4A5568] hover:bg-white/60 hover:text-[#101B2D]'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span>{t.tabCaregiver}</span>
-          </button>
+          {activePage === 'TRACKER' && (
+            <StatusTrackerTab
+              beneficiary={currentBeneficiary}
+              language={language}
+              onNavigateToDiagnostic={() => setActivePage('DIAGNOSTIC')}
+              onSpeak={speakText}
+            />
+          )}
 
-          <button
-            onClick={() => {
-              setActiveTab('LOCKER');
-              speakText(t.tabLocker);
-            }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm whitespace-nowrap transition-all cursor-pointer ${
-              activeTab === 'LOCKER'
-                ? 'bg-[#087F68] text-white shadow-md'
-                : 'text-[#4A5568] hover:bg-white/60 hover:text-[#101B2D]'
-            }`}
-          >
-            <FolderCheck className="w-4 h-4" />
-            <span>{t.tabLocker}</span>
-          </button>
+          {activePage === 'DIAGNOSTIC' && (
+            <DiagnosticDoctorTab
+              beneficiary={currentBeneficiary}
+              language={language}
+              onNavigateToGrievance={(draftText) => {
+                if (draftText) setPrefilledGrievanceText(draftText);
+                setActivePage('GRIEVANCE');
+              }}
+              onSpeak={speakText}
+            />
+          )}
 
-          <button
-            onClick={() => {
-              setActiveTab('GRIEVANCE');
-              speakText(t.tabGrievance);
-            }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm whitespace-nowrap transition-all cursor-pointer ${
-              activeTab === 'GRIEVANCE'
-                ? 'bg-[#087F68] text-white shadow-md'
-                : 'text-[#4A5568] hover:bg-white/60 hover:text-[#101B2D]'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            <span>{t.tabGrievance}</span>
-          </button>
+          {activePage === 'LOCKER' && (
+            <DocumentRakshakTab
+              beneficiary={currentBeneficiary}
+              language={language}
+              onSpeak={speakText}
+            />
+          )}
 
-          <button
-            onClick={() => {
-              setActiveTab('VOICE');
-              speakText(t.tabVoice);
-            }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm whitespace-nowrap transition-all cursor-pointer ${
-              activeTab === 'VOICE'
-                ? 'bg-[#087F68] text-white shadow-md'
-                : 'text-[#4A5568] hover:bg-white/60 hover:text-[#101B2D]'
-            }`}
-          >
-            <Bot className="w-4 h-4 text-emerald-300" />
-            <span>{t.tabVoice}</span>
-          </button>
-        </div>
-      </nav>
+          {activePage === 'CAREGIVER' && (
+            <CaregiverVaultTab
+              beneficiary={currentBeneficiary}
+              caregivers={caregivers}
+              auditLogs={auditLogs}
+              onAddCaregiver={handleAddCaregiver}
+              onRevokeCaregiver={handleRevokeCaregiver}
+              language={language}
+              onSpeak={speakText}
+            />
+          )}
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
-        {activeTab === 'TRACKER' && (
-          <StatusTrackerTab
-            beneficiary={currentBeneficiary}
-            language={language}
-            onNavigateToDiagnostic={() => setActiveTab('DIAGNOSTIC')}
-            onSpeak={speakText}
-          />
-        )}
+          {activePage === 'NOTIFICATIONS' && (
+            <NotificationsView
+              language={language}
+              onSpeak={speakText}
+            />
+          )}
 
-        {activeTab === 'DIAGNOSTIC' && (
-          <DiagnosticDoctorTab
-            beneficiary={currentBeneficiary}
-            language={language}
-            onNavigateToGrievance={(draftText) => {
-              if (draftText) setPrefilledGrievanceText(draftText);
-              setActiveTab('GRIEVANCE');
-            }}
-            onSpeak={speakText}
-          />
-        )}
+          {activePage === 'EXPLORE' && (
+            <ExploreBenefitsView
+              language={language}
+              onNavigate={(page) => setActivePage(page)}
+              onSpeak={speakText}
+            />
+          )}
 
-        {activeTab === 'CAREGIVER' && (
-          <CaregiverVaultTab
-            beneficiary={currentBeneficiary}
-            caregivers={caregivers}
-            auditLogs={auditLogs}
-            onAddCaregiver={handleAddCaregiver}
-            onRevokeCaregiver={handleRevokeCaregiver}
-            language={language}
-            onSpeak={speakText}
-          />
-        )}
+          {activePage === 'GRIEVANCE' && (
+            <GrievancePortalTab
+              beneficiary={currentBeneficiary}
+              language={language}
+              initialText={prefilledGrievanceText}
+              onSpeak={speakText}
+            />
+          )}
 
-        {activeTab === 'LOCKER' && (
-          <DocumentRakshakTab
-            beneficiary={currentBeneficiary}
-            language={language}
-            onSpeak={speakText}
-          />
-        )}
+          {activePage === 'VOICE' && (
+            <VoiceDeskTab
+              beneficiary={currentBeneficiary}
+              language={language}
+              onSpeak={speakText}
+            />
+          )}
 
-        {activeTab === 'GRIEVANCE' && (
-          <GrievancePortalTab
-            beneficiary={currentBeneficiary}
-            language={language}
-            initialText={prefilledGrievanceText}
-            onSpeak={speakText}
-          />
-        )}
+          {activePage === 'SETTINGS' && (
+            <SettingsView
+              language={language}
+              onSelectLanguage={(l) => setLanguage(l)}
+              fontSize={fontSize}
+              onChangeFontSize={(s) => setFontSize(s)}
+              highContrast={highContrast}
+              onToggleHighContrast={() => setHighContrast(!highContrast)}
+              audioVoiceEnabled={audioVoiceEnabled}
+              onToggleAudioVoice={() => setAudioVoiceEnabled(!audioVoiceEnabled)}
+              onSpeak={speakText}
+            />
+          )}
 
-        {activeTab === 'VOICE' && (
-          <VoiceDeskTab
-            beneficiary={currentBeneficiary}
-            language={language}
-            onSpeak={speakText}
-          />
-        )}
-      </main>
+          {activePage === 'TECHNICAL' && (
+            <TechnicalView />
+          )}
+        </main>
 
-      {/* Footer */}
-      <footer className="mt-auto border-t border-[#E2DAC7] bg-[#FAF8F5] py-8 text-xs text-[#5A6A80]">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#087F68] text-white flex items-center justify-center font-bold text-sm">
-              సే
+        {/* Fintech Quality Footer */}
+        <footer className="mt-auto border-t border-[#D0D5DD] bg-white py-6 text-xs text-[#475467]">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-7 h-7 rounded-md bg-[#111C2E] text-white flex items-center justify-center font-bold text-xs font-heading">
+                సే
+              </div>
+              <div>
+                <div className="font-bold text-[#111C2E]">SEVA SUTRA — Navigable Civic-Fintech Platform</div>
+                <div className="text-[11px] text-[#475467]">Built for IMPACTX 2026 • Challenge 20 (Older Adults & Persons with Disabilities)</div>
+              </div>
             </div>
-            <div>
-              <div className="font-bold text-[#101B2D]">SEVA SUTRA — Navigable Pensions & Social Benefits</div>
-              <div>Built for IMPACTX 2026 • Challenge 20 (Civic-Fintech for Older Adults & PwD)</div>
+
+            <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
+              <span className="flex items-center gap-1 text-[#087F68]">
+                <Landmark className="w-3.5 h-3.5" /> DBT Bharat
+              </span>
+              <span className="flex items-center gap-1 text-[#087F68]">
+                <ShieldCheck className="w-3.5 h-3.5" /> NPCI APBS
+              </span>
+              <span className="flex items-center gap-1 text-[#087F68]">
+                <HeartHandshake className="w-3.5 h-3.5" /> Jeevan Pramaan
+              </span>
+              <span className="flex items-center gap-1 text-[#087F68]">
+                <Scale className="w-3.5 h-3.5" /> CP-GRAMS
+              </span>
+              <span className="flex items-center gap-1 text-[#087F68]">
+                <PhoneCall className="w-3.5 h-3.5" /> Elderline 14567
+              </span>
             </div>
           </div>
-
-          <div className="flex flex-wrap items-center gap-4 text-xs font-medium">
-            <span className="flex items-center gap-1 text-[#087F68]">
-              <Landmark className="w-3.5 h-3.5" /> DBT Bharat
-            </span>
-            <span className="flex items-center gap-1 text-[#087F68]">
-              <ShieldCheck className="w-3.5 h-3.5" /> NPCI APBS
-            </span>
-            <span className="flex items-center gap-1 text-[#087F68]">
-              <HeartHandshake className="w-3.5 h-3.5" /> Jeevan Pramaan (UIDAI Face RD)
-            </span>
-            <span className="flex items-center gap-1 text-[#087F68]">
-              <Scale className="w-3.5 h-3.5" /> CP-GRAMS
-            </span>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }

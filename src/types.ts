@@ -1,5 +1,18 @@
 export type Language = 'en' | 'te' | 'hi';
 
+export type NavPage = 
+  | 'DASHBOARD'
+  | 'TRACKER'
+  | 'DIAGNOSTIC'
+  | 'LOCKER'
+  | 'CAREGIVER'
+  | 'NOTIFICATIONS'
+  | 'EXPLORE'
+  | 'GRIEVANCE'
+  | 'VOICE'
+  | 'SETTINGS'
+  | 'TECHNICAL';
+
 export type BenefitScheme = 
   | 'IGNOAPS' // Indira Gandhi National Old Age Pension
   | 'IGNWPS' // Indira Gandhi National Widow Pension
@@ -115,4 +128,27 @@ export interface GrievancePetition {
   status: 'SUBMITTED' | 'UNDER_REVIEW' | 'ESCALATED' | 'RESOLVED';
   expectedTurnaroundDays: number;
   content: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  timestamp: string;
+  type: 'PAYMENT_ALERT' | 'VERIFICATION_DUE' | 'CAREGIVER_ACTION' | 'SECURITY' | 'SYSTEM';
+  severity: 'HIGH_RISK' | 'ATTENTION' | 'NORMAL' | 'SUCCESS';
+  read: boolean;
+  source: string;
+}
+
+export interface BenefitCatalogItem {
+  id: string;
+  name: string;
+  authority: string;
+  category: 'Elderly' | 'Disability' | 'Widow' | 'Social Security';
+  monthlyBenefit: string;
+  eligibility: string[];
+  keyDocuments: string[];
+  dbtEnabled: boolean;
+  coverage: string;
 }

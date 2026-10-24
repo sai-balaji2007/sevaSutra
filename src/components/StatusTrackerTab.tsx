@@ -1,6 +1,7 @@
 import React from 'react';
-import { Beneficiary, Language } from '../types';
+import { Beneficiary, Language, NavPage } from '../types';
 import { TRANSLATIONS } from '../data/translations';
+import { StatusChip } from './StatusChip';
 import { 
   CheckCircle2, 
   Clock, 
@@ -8,14 +9,14 @@ import {
   XCircle, 
   Landmark, 
   Fingerprint, 
-  CreditCard, 
   Calendar, 
   ArrowRight,
   ShieldAlert,
   FileCheck2,
   Stethoscope,
   Building2,
-  HelpCircle
+  AlertOctagon,
+  ChevronRight
 } from 'lucide-react';
 
 interface StatusTrackerTabProps {
@@ -33,8 +34,6 @@ export const StatusTrackerTab: React.FC<StatusTrackerTabProps> = ({
 }) => {
   const t = TRANSLATIONS[language];
 
-  // Check if there is an active failure
-  const hasFailedStage = beneficiary.timeline.some(step => step.status === 'failed');
   const recentPayment = beneficiary.paymentHistory[0];
   const isPaymentBlocked = recentPayment && (recentPayment.status === 'FAILED' || recentPayment.status === 'ON_HOLD');
 
@@ -46,31 +45,29 @@ export const StatusTrackerTab: React.FC<StatusTrackerTabProps> = ({
     <div className="space-y-6">
       {/* High Priority Critical Alert Banner if payment is blocked */}
       {isPaymentBlocked && (
-        <div className="bg-amber-50 border-2 border-amber-500 rounded-2xl p-5 shadow-sm">
+        <div className="bg-white border-2 border-[#B42332]/40 rounded-2xl p-5 shadow-xs bg-gradient-to-r from-white to-[#FEF3F2]/40">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="p-2.5 bg-amber-500 text-white rounded-xl shadow-xs shrink-0 mt-0.5">
-                <ShieldAlert className="w-6 h-6" />
+            <div className="flex items-start gap-3.5">
+              <div className="p-2.5 bg-[#FEF3F2] text-[#B42332] rounded-xl border border-[#FECDCA] shrink-0 mt-0.5">
+                <AlertOctagon className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-bold text-amber-950 font-heading">
+                  <h3 className="text-base font-bold text-[#111C2E] font-heading">
                     {language === 'te' 
                       ? 'హెచ్చరిక: మీ నెలవారీ పింఛను చెల్లింపు నిలిచిపోయింది'
                       : language === 'hi' 
                         ? 'चेतावनी: आपकी मासिक पेंशन का भुगतान रुक गया है' 
-                        : 'Alert: Your Monthly Pension Disbursal is Blocked'}
+                        : 'Action Required: Monthly Pension Disbursal Withheld'}
                   </h3>
-                  <span className="bg-red-100 text-red-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-red-300">
-                    {recentPayment?.status}
-                  </span>
+                  <StatusChip variant="high-risk" label={recentPayment?.status} />
                 </div>
-                <p className="text-sm text-amber-900 mt-1 font-medium">
+                <p className="text-xs text-[#475467] mt-1 font-medium leading-relaxed max-w-2xl">
                   {recentPayment?.failureReason || 'Government treasury released payment, but processing failed at payment bridge.'}
                 </p>
-                <p className="text-xs text-amber-800 mt-1">
-                  Affecting: {recentPayment?.month} (₹{recentPayment?.amount.toLocaleString('en-IN')})
-                </p>
+                <div className="text-[11px] text-[#B42332] font-semibold mt-1">
+                  Affecting: {recentPayment?.month} • Amount Withheld: ₹{recentPayment?.amount.toLocaleString('en-IN')}
+                </div>
               </div>
             </div>
 
@@ -79,11 +76,11 @@ export const StatusTrackerTab: React.FC<StatusTrackerTabProps> = ({
                 onSpeak('Opening Payment Delay Doctor to analyze the exact cause and generate your remedy plan');
                 onNavigateToDiagnostic();
               }}
-              className="bg-[#087F68] hover:bg-[#066553] text-white px-5 py-3 rounded-xl font-bold text-sm shadow-md flex items-center gap-2 shrink-0 transition-transform active:scale-95 cursor-pointer ring-2 ring-[#087F68]/20"
+              className="bg-[#087F68] hover:bg-[#066553] text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-xs flex items-center gap-2 shrink-0 transition-transform active:scale-95 cursor-pointer"
             >
-              <Stethoscope className="w-5 h-5 text-emerald-200" />
+              <Stethoscope className="w-4 h-4 text-[#A6F4C5]" />
               <span>{t.diagnoseButton}</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -92,108 +89,88 @@ export const StatusTrackerTab: React.FC<StatusTrackerTabProps> = ({
       {/* Overview Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Monthly Amount */}
-        <div className="bg-white p-5 rounded-2xl border border-[#E2DAC7] shadow-xs hover:border-[#087F68]/40 transition-colors">
-          <div className="flex items-center justify-between text-[#5A6A80] mb-2">
+        <div className="bg-white p-5 rounded-2xl border border-[#D0D5DD] shadow-xs">
+          <div className="flex items-center justify-between text-[#475467] mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">{t.monthlyPension}</span>
             <Building2 className="w-4 h-4 text-[#087F68]" />
           </div>
-          <div className="text-3xl font-extrabold text-[#101B2D] font-heading">
+          <div className="text-2xl font-extrabold text-[#111C2E] font-heading">
             ₹{beneficiary.monthlyAmount.toLocaleString('en-IN')}
           </div>
-          <p className="text-xs text-[#5A6A80] mt-1 font-medium">
-            Disbursal: 1st of every month via DBT
+          <p className="text-xs text-[#475467] mt-1">
+            Schedule: 1st of every month via DBT
           </p>
         </div>
 
         {/* NPCI Aadhaar Seeding */}
-        <div className={`p-5 rounded-2xl border shadow-xs transition-colors ${
-          beneficiary.npciAadhaarSeeded 
-            ? 'bg-white border-[#E2DAC7]' 
-            : 'bg-red-50/70 border-red-300'
-        }`}>
-          <div className="flex items-center justify-between text-[#5A6A80] mb-2">
+        <div className="bg-white p-5 rounded-2xl border border-[#D0D5DD] shadow-xs">
+          <div className="flex items-center justify-between text-[#475467] mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">{t.aadhaarLinked}</span>
-            <Fingerprint className={`w-4 h-4 ${beneficiary.npciAadhaarSeeded ? 'text-[#087F68]' : 'text-red-600'}`} />
+            <Fingerprint className="w-4 h-4 text-[#087F68]" />
           </div>
           <div className="flex items-center gap-2">
             {beneficiary.npciAadhaarSeeded ? (
-              <span className="inline-flex items-center gap-1.5 text-base font-bold text-emerald-800 bg-emerald-100/70 px-2.5 py-1 rounded-lg">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" /> {t.seeded}
-              </span>
+              <StatusChip variant="completed" label={t.seeded} source="UIDAI" />
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-base font-bold text-red-800 bg-red-100 px-2.5 py-1 rounded-lg">
-                <XCircle className="w-4 h-4 text-red-600" /> {t.notSeeded}
-              </span>
+              <StatusChip variant="high-risk" label={t.notSeeded} source="Code AB-01" />
             )}
           </div>
-          <p className="text-xs text-[#5A6A80] mt-2">
-            Aadhaar: **** **** {beneficiary.aadhaarLastFour}
+          <p className="text-xs text-[#475467] mt-2 font-mono-code">
+            Masked: •••• •••• {beneficiary.aadhaarLastFour}
           </p>
         </div>
 
         {/* Jeevan Pramaan / Digital Life Certificate */}
-        <div className={`p-5 rounded-2xl border shadow-xs transition-colors ${
-          daysUntilDLC < 0 
-            ? 'bg-red-50/70 border-red-300' 
-            : daysUntilDLC < 30 
-              ? 'bg-amber-50/70 border-amber-300' 
-              : 'bg-white border-[#E2DAC7]'
-        }`}>
-          <div className="flex items-center justify-between text-[#5A6A80] mb-2">
+        <div className="bg-white p-5 rounded-2xl border border-[#D0D5DD] shadow-xs">
+          <div className="flex items-center justify-between text-[#475467] mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">{t.jeevanPramaan}</span>
             <FileCheck2 className="w-4 h-4 text-[#087F68]" />
           </div>
           <div className="flex items-center gap-2">
             {daysUntilDLC < 0 ? (
-              <span className="inline-flex items-center gap-1.5 text-sm font-bold text-red-700 bg-red-100 px-2.5 py-1 rounded-lg">
-                <AlertTriangle className="w-4 h-4" /> {t.expired}
-              </span>
+              <StatusChip variant="high-risk" label={t.expired} />
+            ) : daysUntilDLC < 30 ? (
+              <StatusChip variant="attention" label={t.expiresSoon} />
             ) : (
-              <span className="text-sm font-bold text-[#101B2D]">
-                {t.validUntil} {new Date(beneficiary.jeevanPramaanValidUntil).toLocaleDateString()}
-              </span>
+              <StatusChip variant="completed" label="Valid" />
             )}
           </div>
-          <p className={`text-xs mt-2 font-medium ${daysUntilDLC < 0 ? 'text-red-700 font-bold' : 'text-[#5A6A80]'}`}>
-            {daysUntilDLC < 0 
-              ? `Expired ${Math.abs(daysUntilDLC)} days ago` 
-              : `${daysUntilDLC} days remaining`}
+          <p className="text-xs text-[#475467] mt-2">
+            {t.validUntil} {new Date(beneficiary.jeevanPramaanValidUntil).toLocaleDateString()}
           </p>
         </div>
 
         {/* Disbursal Bank Details */}
-        <div className="bg-white p-5 rounded-2xl border border-[#E2DAC7] shadow-xs">
-          <div className="flex items-center justify-between text-[#5A6A80] mb-2">
+        <div className="bg-white p-5 rounded-2xl border border-[#D0D5DD] shadow-xs">
+          <div className="flex items-center justify-between text-[#475467] mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Designated Bank</span>
             <Landmark className="w-4 h-4 text-[#087F68]" />
           </div>
-          <div className="text-base font-bold text-[#101B2D] truncate">
+          <div className="text-sm font-bold text-[#111C2E] truncate font-heading">
             {beneficiary.bankName}
           </div>
-          <p className="text-xs text-[#5A6A80] mt-1 font-mono-code">
+          <p className="text-xs text-[#475467] mt-1 font-mono-code truncate">
             Acct: •••• {beneficiary.accountLastFour} ({beneficiary.ifscCode})
           </p>
         </div>
       </div>
 
       {/* 5-Stage Visual Workflow Pipeline */}
-      <div className="bg-white p-6 rounded-2xl border border-[#E2DAC7] shadow-xs">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-white p-6 rounded-2xl border border-[#D0D5DD] shadow-xs">
+        <div className="flex items-center justify-between mb-2 pb-3 border-b border-[#F2F4F7]">
           <div>
-            <h2 className="text-lg font-bold text-[#101B2D] font-heading">
+            <h2 className="text-base font-bold text-[#111C2E] font-heading">
               {t.currentStage}
             </h2>
-            <p className="text-xs text-[#5A6A80]">
-              From initial sanction to bank credit — transparent tracking of every civic checkpoint
+            <p className="text-xs text-[#475467]">
+              End-to-end verification pipeline from civic sanction to banking credit
             </p>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#EAE2D2] text-[#5A6A80]">
-            Scheme: {beneficiary.scheme}
-          </span>
+          <StatusChip variant="official" label={beneficiary.scheme} source="NSAP" />
         </div>
 
         {/* Pipeline Steps Container */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mt-4">
           {beneficiary.timeline.map((step, idx) => {
             const isCompleted = step.status === 'completed';
             const isFailed = step.status === 'failed';
@@ -203,35 +180,37 @@ export const StatusTrackerTab: React.FC<StatusTrackerTabProps> = ({
             return (
               <div
                 key={idx}
-                className={`p-4 rounded-xl border relative flex flex-col justify-between transition-all ${
+                className={`p-4 rounded-xl border flex flex-col justify-between transition-all ${
                   isFailed
-                    ? 'bg-red-50 border-red-400 ring-2 ring-red-400/20'
+                    ? 'bg-[#FEF3F2] border-[#FECDCA]'
                     : isCompleted
-                      ? 'bg-[#F4F9F6] border-[#B7E4D3]'
+                      ? 'bg-white border-[#D0D5DD]'
                       : isInProgress
-                        ? 'bg-amber-50 border-amber-300'
-                        : 'bg-[#FAF8F5] border-[#E8E1D3] opacity-70'
+                        ? 'bg-[#FFF4D6] border-[#FEDF89]'
+                        : 'bg-[#F9FAFB] border-[#EAECF0] opacity-80'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-[#5A6A80]">Step {idx + 1}</span>
-                    {isCompleted && <CheckCircle2 className="w-5 h-5 text-[#087F68]" />}
-                    {isFailed && <XCircle className="w-5 h-5 text-red-600 animate-pulse" />}
-                    {isInProgress && <Clock className="w-5 h-5 text-amber-600 animate-spin" />}
-                    {isPending && <Clock className="w-4 h-4 text-gray-400" />}
+                    <span className="text-[10px] font-bold text-[#475467] uppercase tracking-wider">
+                      Stage 0{idx + 1}
+                    </span>
+                    {isCompleted && <CheckCircle2 className="w-4 h-4 text-[#087F68]" />}
+                    {isFailed && <AlertOctagon className="w-4 h-4 text-[#B42332]" />}
+                    {isInProgress && <Clock className="w-4 h-4 text-[#9A6700] animate-spin" />}
+                    {isPending && <Clock className="w-3.5 h-3.5 text-[#98A2B3]" />}
                   </div>
 
-                  <h3 className="text-sm font-bold text-[#101B2D] leading-snug">
+                  <h3 className="text-xs font-bold text-[#111C2E] leading-snug font-heading">
                     {step.stage.replace('_', ' ')}
                   </h3>
 
-                  <p className="text-xs text-[#4A5568] mt-2 line-clamp-3">
+                  <p className="text-[11px] text-[#475467] mt-2 line-clamp-3 leading-relaxed">
                     {step.description}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-2 border-t border-black/5 text-[11px] text-[#5A6A80] font-mono-code">
+                <div className="mt-4 pt-2 border-t border-[#F2F4F7] text-[10px] text-[#667085] font-mono-code">
                   {step.date}
                 </div>
               </div>
@@ -241,80 +220,72 @@ export const StatusTrackerTab: React.FC<StatusTrackerTabProps> = ({
       </div>
 
       {/* Disbursement Transaction History Ledger */}
-      <div className="bg-white rounded-2xl border border-[#E2DAC7] shadow-xs overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#E2DAC7] flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-white rounded-2xl border border-[#D0D5DD] shadow-xs overflow-hidden">
+        <div className="px-6 py-4 border-b border-[#D0D5DD] flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 className="text-lg font-bold text-[#101B2D] font-heading">
+            <h2 className="text-base font-bold text-[#111C2E] font-heading">
               {t.paymentHistory}
             </h2>
-            <p className="text-xs text-[#5A6A80]">
-              Direct Benefit Transfer (DBT) monthly statement
+            <p className="text-xs text-[#475467]">
+              Direct Benefit Transfer (DBT) monthly statement ledger
             </p>
           </div>
-          <div className="text-xs text-[#5A6A80] bg-[#FAF8F5] px-3 py-1.5 rounded-lg border border-[#E8E1D3]">
-            Verified with PFMS & Treasury Gateway
-          </div>
+          <StatusChip variant="official" label="PFMS & APBS Synchronized" source="Treasury" />
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-sm">
+          <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-[#FAF8F5] border-b border-[#E2DAC7] text-xs font-bold text-[#5A6A80] uppercase tracking-wider">
-                <th className="py-3.5 px-6">Month</th>
-                <th className="py-3.5 px-6">Amount</th>
-                <th className="py-3.5 px-6">Status</th>
-                <th className="py-3.5 px-6">Date & UTR / Ref</th>
-                <th className="py-3.5 px-6">Bank Remark</th>
-                <th className="py-3.5 px-6 text-right">Action</th>
+              <tr className="bg-[#F8F9FA] border-b border-[#D0D5DD] text-[11px] font-bold text-[#475467] uppercase tracking-wider">
+                <th className="py-3 px-6">Disbursal Month</th>
+                <th className="py-3 px-6">Amount</th>
+                <th className="py-3 px-6">Processing Status</th>
+                <th className="py-3 px-6">Date & UTR / Ref</th>
+                <th className="py-3 px-6">Gateway Remark</th>
+                <th className="py-3 px-6 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E2DAC7]">
+            <tbody className="divide-y divide-[#F2F4F7]">
               {beneficiary.paymentHistory.map((record) => (
-                <tr key={record.id} className="hover:bg-[#FAF8F5]/80 transition-colors">
-                  <td className="py-4 px-6 font-bold text-[#101B2D]">
+                <tr key={record.id} className="hover:bg-[#F9FAFB] transition-colors">
+                  <td className="py-3.5 px-6 font-bold text-[#111C2E]">
                     {record.month}
                   </td>
-                  <td className="py-4 px-6 font-extrabold text-[#101B2D]">
+                  <td className="py-3.5 px-6 font-extrabold text-[#111C2E]">
                     ₹{record.amount.toLocaleString('en-IN')}
                   </td>
-                  <td className="py-4 px-6">
+                  <td className="py-3.5 px-6">
                     {record.status === 'CREDITED' && (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Credited
-                      </span>
+                      <StatusChip variant="completed" label="Credited" />
                     )}
                     {record.status === 'FAILED' && (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-red-800 bg-red-100 px-2.5 py-1 rounded-full">
-                        <XCircle className="w-3.5 h-3.5" /> Returned Unpaid
-                      </span>
+                      <StatusChip variant="high-risk" label="Returned Unpaid" />
                     )}
                     {record.status === 'ON_HOLD' && (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full">
-                        <Clock className="w-3.5 h-3.5" /> On Hold (DLC)
-                      </span>
+                      <StatusChip variant="pending" label="On Hold (DLC)" />
                     )}
                   </td>
-                  <td className="py-4 px-6 text-xs text-[#5A6A80] font-mono-code">
+                  <td className="py-3.5 px-6 text-[11px] text-[#475467] font-mono-code">
                     {record.dateDisbursed || '—'}
-                    {record.utrNumber && <div className="text-[11px] text-[#087F68]">UTR: {record.utrNumber}</div>}
+                    {record.utrNumber && <div className="text-[10px] text-[#087F68] font-bold">UTR: {record.utrNumber}</div>}
                   </td>
-                  <td className="py-4 px-6 text-xs text-[#4A5568] max-w-xs">
+                  <td className="py-3.5 px-6 text-xs text-[#475467] max-w-xs">
                     {record.failureReason ? (
-                      <span className="text-red-700 font-medium">{record.failureReason}</span>
+                      <span className="text-[#B42332] font-medium">{record.failureReason}</span>
                     ) : (
-                      <span className="text-emerald-700">Processed successfully via NPCI APBS</span>
+                      <span className="text-[#087F68]">Settled via NPCI APBS</span>
                     )}
                   </td>
-                  <td className="py-4 px-6 text-right">
+                  <td className="py-3.5 px-6 text-right">
                     {record.status !== 'CREDITED' ? (
                       <button
                         onClick={onNavigateToDiagnostic}
-                        className="text-xs font-bold text-[#087F68] hover:text-[#066553] hover:underline inline-flex items-center gap-1"
+                        className="text-xs font-bold text-[#087F68] hover:text-[#066553] inline-flex items-center gap-1 cursor-pointer"
                       >
                         Fix Delay <ArrowRight className="w-3 h-3" />
                       </button>
                     ) : (
-                      <span className="text-xs text-[#5A6A80]">Settled</span>
+                      <span className="text-xs text-[#98A2B3]">Settled</span>
                     )}
                   </td>
                 </tr>

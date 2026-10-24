@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Beneficiary, Language } from '../types';
 import { TRANSLATIONS } from '../data/translations';
+import { StatusChip } from './StatusChip';
 import { 
   Mic, 
   MicOff, 
@@ -8,10 +9,8 @@ import {
   Sparkles, 
   Send, 
   MessageSquare, 
-  HelpCircle, 
   Bot, 
   User, 
-  CheckCircle2,
   PhoneCall
 } from 'lucide-react';
 
@@ -54,7 +53,6 @@ export const VoiceDeskTab: React.FC<VoiceDeskTabProps> = ({
     }
   ]);
 
-  // Suggested preset questions by language
   const suggestedQuestions = language === 'te'
     ? [
         'నా పింఛను ఎందుకు రాలేదు?',
@@ -182,30 +180,28 @@ export const VoiceDeskTab: React.FC<VoiceDeskTabProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-[#087F68] to-[#0A967B] text-white p-6 rounded-3xl shadow-md">
+      {/* Hero Banner - Midnight Navy */}
+      <div className="bg-[#111C2E] text-white p-6 rounded-2xl border border-[#1F2F4A] shadow-xs">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-xs ring-1 ring-white/20">
-              <Bot className="w-8 h-8 text-emerald-200" />
+          <div className="flex items-center gap-3.5">
+            <div className="p-3 bg-[#1A2840] rounded-xl border border-[#2D3E5D] shrink-0">
+              <Bot className="w-6 h-6 text-[#A6F4C5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl md:text-2xl font-bold font-heading">
-                  {t.tabVoice} (కృప / Krupa Assistant)
+                <h2 className="text-xl md:text-2xl font-bold font-heading text-white tracking-tight">
+                  {t.tabVoice}
                 </h2>
-                <span className="bg-white/20 text-white text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-amber-300" /> Multilingual Voice
-                </span>
+                <StatusChip variant="official" label="Vernacular AI" source="Voice" />
               </div>
-              <p className="text-sm text-emerald-100 mt-1 max-w-2xl">
+              <p className="text-xs md:text-sm text-[#98A2B3] mt-1 max-w-2xl leading-relaxed">
                 {t.voiceAssistantPrompt}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs bg-black/20 px-3 py-1.5 rounded-xl text-emerald-100">
+            <span className="text-[11px] bg-[#1A2840] px-3 py-1.5 rounded-lg border border-[#2D3E5D] text-[#D0D5DD]">
               Languages: English • తెలుగు • हिन्दी
             </span>
           </div>
@@ -214,15 +210,15 @@ export const VoiceDeskTab: React.FC<VoiceDeskTabProps> = ({
 
       {/* Suggested Quick Tap Prompts */}
       <div className="space-y-2">
-        <div className="text-xs font-bold text-[#5A6A80] uppercase tracking-wider">
-          Quick Accessibility Questions (Tap to Ask):
+        <div className="text-[11px] font-bold text-[#475467] uppercase tracking-wider">
+          Quick Accessibility Questions (Tap to Speak):
         </div>
         <div className="flex flex-wrap gap-2">
           {suggestedQuestions.map((q, idx) => (
             <button
               key={idx}
               onClick={() => handleAskQuestion(q)}
-              className="bg-white hover:bg-[#FAF8F5] text-[#101B2D] border border-[#D5CBB8] px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold shadow-2xs hover:border-[#087F68] transition-all cursor-pointer flex items-center gap-2"
+              className="bg-white hover:bg-[#F9FAFB] text-[#172033] border border-[#D0D5DD] px-3 py-2 rounded-lg text-xs font-semibold shadow-2xs hover:border-[#087F68] transition-all cursor-pointer flex items-center gap-2"
             >
               <MessageSquare className="w-3.5 h-3.5 text-[#087F68]" />
               <span>{q}</span>
@@ -232,7 +228,7 @@ export const VoiceDeskTab: React.FC<VoiceDeskTabProps> = ({
       </div>
 
       {/* Chat Messages Log */}
-      <div className="bg-white rounded-3xl border border-[#E2DAC7] shadow-xs p-6 space-y-4 min-h-[340px] flex flex-col justify-between">
+      <div className="bg-white rounded-2xl border border-[#D0D5DD] shadow-xs p-6 space-y-4 min-h-[340px] flex flex-col justify-between">
         <div className="space-y-4 overflow-y-auto max-h-[440px] pr-2">
           {messages.map((msg) => {
             const isUser = msg.sender === 'user';
@@ -241,16 +237,16 @@ export const VoiceDeskTab: React.FC<VoiceDeskTabProps> = ({
                 key={msg.id}
                 className={`flex items-start gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
               >
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-                  isUser ? 'bg-[#101B2D] text-white' : 'bg-[#087F68] text-white shadow-xs'
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                  isUser ? 'bg-[#111C2E] text-white' : 'bg-[#E7F4EF] text-[#087F68]'
                 }`}>
-                  {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4 text-emerald-200" />}
+                  {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                 </div>
 
-                <div className={`max-w-[80%] rounded-2xl p-4 text-sm leading-relaxed ${
+                <div className={`max-w-[80%] rounded-xl p-3.5 text-xs leading-relaxed ${
                   isUser 
-                    ? 'bg-[#101B2D] text-white rounded-tr-none' 
-                    : 'bg-[#FDFBF7] text-[#101B2D] border border-[#E8E1D3] rounded-tl-none shadow-2xs'
+                    ? 'bg-[#111C2E] text-white rounded-tr-none' 
+                    : 'bg-[#F8F9FA] text-[#172033] border border-[#D0D5DD] rounded-tl-none shadow-2xs'
                 }`}>
                   <p className="whitespace-pre-wrap font-sans">{msg.text}</p>
                   <div className="mt-2 flex items-center justify-between text-[10px] opacity-70">
@@ -258,7 +254,7 @@ export const VoiceDeskTab: React.FC<VoiceDeskTabProps> = ({
                     {!isUser && (
                       <button
                         onClick={() => onSpeak(msg.text)}
-                        className="hover:underline flex items-center gap-1 text-[#087F68] font-bold"
+                        className="hover:underline flex items-center gap-1 text-[#087F68] font-bold cursor-pointer"
                       >
                         <Volume2 className="w-3.5 h-3.5" /> Listen Aloud
                       </button>
@@ -270,58 +266,55 @@ export const VoiceDeskTab: React.FC<VoiceDeskTabProps> = ({
           })}
 
           {loading && (
-            <div className="flex items-center gap-3 text-xs text-[#5A6A80]">
-              <div className="w-8 h-8 rounded-full bg-[#087F68] text-white flex items-center justify-center animate-pulse">
+            <div className="flex items-center gap-3 text-xs text-[#475467]">
+              <div className="w-7 h-7 rounded-lg bg-[#E7F4EF] text-[#087F68] flex items-center justify-center animate-pulse">
                 <Bot className="w-4 h-4" />
               </div>
-              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#E8E1D3]">
-                <Sparkles className="w-4 h-4 inline animate-spin text-[#087F68] mr-2" />
-                Thinking in {language === 'te' ? 'Telugu' : language === 'hi' ? 'Hindi' : 'English'}...
+              <div className="p-2.5 bg-[#F8F9FA] rounded-lg border border-[#D0D5DD]">
+                <Sparkles className="w-3.5 h-3.5 inline animate-spin text-[#087F68] mr-2" />
+                Processing question...
               </div>
             </div>
           )}
         </div>
 
         {/* Big Mic Button & Input Control Bar */}
-        <div className="pt-4 border-t border-[#E2DAC7] space-y-3">
-          <div className="flex items-center gap-3">
-            {/* Big Accessible Mic */}
+        <div className="pt-4 border-t border-[#F2F4F7] space-y-3">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={toggleMicListening}
-              className={`p-4 rounded-2xl font-bold shadow-md flex items-center justify-center transition-all cursor-pointer ${
+              className={`p-3.5 rounded-xl font-bold shadow-xs flex items-center justify-center transition-all cursor-pointer ${
                 isListening 
-                  ? 'bg-red-600 text-white animate-pulse ring-4 ring-red-300' 
+                  ? 'bg-[#B42332] text-white animate-pulse ring-2 ring-[#B42332]/30' 
                   : 'bg-[#087F68] hover:bg-[#066553] text-white hover:scale-105'
               }`}
               title="Click to Speak"
             >
-              {isListening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
+              {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
             </button>
 
-            {/* Text Input */}
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAskQuestion(inputText)}
-              placeholder={isListening ? t.listening : 'Or type your question here...'}
-              className="flex-1 bg-[#FAF8F5] border border-[#D5CBB8] rounded-2xl px-4 py-3 text-sm text-[#101B2D] focus:outline-none focus:ring-2 focus:ring-[#087F68] focus:bg-white"
+              placeholder={isListening ? t.listening : 'Type or speak your question...'}
+              className="flex-1 bg-white border border-[#D0D5DD] rounded-xl px-4 py-2.5 text-xs text-[#172033] focus:outline-none focus:ring-2 focus:ring-[#087F68]"
             />
 
-            {/* Send Button */}
             <button
               onClick={() => handleAskQuestion(inputText)}
               disabled={!inputText.trim() || loading}
-              className="bg-[#101B2D] hover:bg-black text-white p-3.5 rounded-2xl font-bold shadow-xs disabled:opacity-40 cursor-pointer"
+              className="bg-[#111C2E] hover:bg-black text-white p-3 rounded-xl font-bold shadow-xs disabled:opacity-40 cursor-pointer"
             >
-              <Send className="w-5 h-5" />
+              <Send className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-[#5A6A80] px-1">
-            <span>Powered by Gemini & Civic Rules Knowledge Base</span>
+          <div className="flex items-center justify-between text-[11px] text-[#475467] px-1">
+            <span>Official Civic Grounding • No Hallucination Protocol</span>
             <span className="flex items-center gap-1 text-[#087F68] font-bold">
-              <PhoneCall className="w-3.5 h-3.5" /> Elderline: 14567
+              <PhoneCall className="w-3 h-3" /> Elderline: 14567
             </span>
           </div>
         </div>
